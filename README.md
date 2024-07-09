@@ -5,4 +5,3 @@ Teacher authentications and system to solicitate and create courses from Moodle 
 - Teachers can create courses from Moodle platform.
 - Teachers can view the courses created by them.
 - Teachers can view the list of authentications requested by them.
-
