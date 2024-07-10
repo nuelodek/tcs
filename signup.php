@@ -12,10 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/', $password)) {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                // Save to database (add your own database logic here)
-                // $stmt = $db->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-                // $stmt->bind_param("ss", $username, $hashed_password);
-                // $stmt->execute();
+                $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+                $stmt->bind_param("ss", $username, $hashed_password);
+                $stmt->execute();
 
                 echo "Signup successful!";
             } else {
