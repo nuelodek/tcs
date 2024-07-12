@@ -7,7 +7,7 @@ $tokenUrl = 'https://informaticajv.net/prueba/login/token.php';
 $params = [
     'service' => 'moodle_mobile_app',
     'username' => 'admin',
-    'password' => 'OSh4@3sbZ'
+    'password' => 'OSh4&@3sbZ'
 ];
 
 // Build URL with parameters

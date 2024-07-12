@@ -8,6 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
             $password = $_POST['password'];
 
+            - query if user exist in the https://informaticajv.net/ {
+                if user exist in https://informaticajv.net/ (database)
+                    action = redirect to the profile page 
+                    (with all permissions and ability to solitate course)
+                if user doesnt exist in https://informaticajv.net/
+                    action = create a new account temporarily 
+            }
+
             // Password validation
             if (preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/', $password)) {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);

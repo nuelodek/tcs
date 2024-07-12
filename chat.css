@@ -1,0 +1,187 @@
+        .chat-message .time {
+            font-size: 0.8em; /* You can adjust the font size as per your preference */
+            color: #666; /* You can change the color as per your preference */
+            margin-top: 5px; /* Add some space between the message text and the time */
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .chat-container {
+            min-width: 100px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color:#ffe227;
+            border-radius: 5px;
+        }
+
+        #logoutButton { 
+            
+                background-color:#ffe227;
+                padding: 10px;
+                margin: 0 auto;
+                border-radius:10px;
+                border:none;
+        }
+#logoutButton:hover {
+            background-color:black;
+            color: white;
+            cursor: pointer;
+}
+        .chat-box {
+background-color: #ff342f;          
+background-repeat: repeat; /* Repeat both horizontally and vertically */
+            height: 500px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px); /* Adjust the blur radius as needed */
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid #ccc;
+            padding: 10px;
+            scrollbar-face-color: #888;
+            scrollbar-track-color: #f1f1f1;
+            scrollbar-arrow-color: #555;
+            scrollbar-shadow-color: #888;
+            scrollbar-highlight-color: #f1f1f1;
+            scrollbar-3dlight-color: #f1f1f1;
+            scrollbar-darkshadow-color: #888;
+        }
+
+        /* Customize the scroll bar */
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+            border-radius: 20px;
+        }
+
+        .chat-box::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .chat-box::-ms-scrollbar-thumb {
+            background-color: #888;
+        }
+
+        .chat-box::-ms-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        .chat-box::-ms-scrollbar-arrow {
+            background-color: #555;
+        }
+
+        .chat-box::-ms-scrollbar-shadow {
+            background-color: #888;
+        }
+
+        .chat-box::-ms-scrollbar-highlight {
+            background-color: #f1f1f1;
+        }
+
+        .chat-box::-ms-scrollbar-3dlight {
+            background-color: #f1f1f1;
+        }
+
+        .chat-box::-ms-scrollbar-darkshadow {
+            background-color: #888;
+        }
+
+ /* CSS style for .chat-message */
+.chat-message {
+  border-radius: 5px;
+  padding: 8px; /* Reduce padding to make the container smaller */
+  max-width: 80%;
+  margin-bottom: 10px;
+  clear: both;
+}
+
+/* CSS style for img inside .chat-message */
+.chat-message img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 3px; /* Slightly smaller border radius */
+  display: block;
+  margin: 5px 0; /* Reduce margin to make the images closer to the text */
+}
+
+
+
+        .chat-message.explorer {
+            word-wrap: break-word;
+            background-color: #DCF8C6;
+            float: right;
+        }
+
+        .chat-message.adviser {
+            word-wrap: break-word;
+            background-color: #F0F0F0;
+            float: left;
+        }
+
+        .chat-message .text {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .chat-message .file-info {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        #message-input,
+        #file-input,
+        button[type="submit"] {
+            margin-top: 10px;
+        }
+
+#message-input {
+ flex-grow: 1;
+  margin-right: 10px;
+  padding: 10px;
+  width: 800px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  
+}
+
+
+
+        button[type="submit"] {
+            padding: 8px 16px;
+            background-color: purple;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: inline-block;
+            padding: 7px 16px;
+            background-color: #128C7E;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .file-input-button input[type="file"] {
+            display: none;
+        }
+    
