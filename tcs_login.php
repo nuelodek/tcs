@@ -1,113 +1,156 @@
 <?php
 session_start();
-require_once 'db.php'; // Assuming this file contains your database connection
+include 'db.php'; // Include your database connection script
 
-// Function to call Moodle API
-function call_moodle_api($url, $params) {
-    // Build URL with parameters
-    $url = $url . '?' . http_build_query($params);
-    
-    // Initialize cURL session
-    $ch = curl_init();
-    
-    // Set cURL options
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    
-    // Execute the request
-    $response = curl_exec($ch);
-    
-    // Check if the request was successful
-    if ($response === false) {
-        // Handle error
-        echo 'Error fetching data: ' . curl_error($ch);
-        curl_close($ch);
-        return false;
-    }
-    
-    // Close cURL session
-    curl_close($ch);
-    
-    // Decode JSON response
-    return json_decode($response, true);
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Check if user is already logged in
-if (isset($_SESSION['username'])) {
-    header("Location: profile.php");
-    exit;
-}
-
-// Check if form submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['username'], $_POST['password'])) {
-        $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
-        $password = $_POST['password'];
-
-        // Validate username and password locally
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                // Password correct locally, now authenticate against Moodle
-                $apiUrl = 'https://informaticajv.net/prueba/webservice/rest/server.php';
-                $token = '414bb1e4f9b439c396b298d4f2e97463'; // Your Moodle API token
-
-                $params = [
-                    'wstoken' => $token,
-                    'wsfunction' => 'core_authenticate_user_login',
-                    'moodlewsrestformat' => 'json',
-                    'username' => $username,
-                    'password' => $password
-                ];
-
-                // Debugging: Output the API request details
-                echo "API Request: " . $apiUrl . '?' . http_build_query($params) . "<br>";
-
-                $authResult = call_moodle_api($apiUrl, $params);
-
-                // Debugging: Output the API response
-                echo "API Response: ";
-                print_r($authResult);
-                echo "<br>";
-
-                if (!empty($authResult['token'])) {
-                    // Authentication successful, start session and redirect to profile
-                    $_SESSION['username'] = $username;
-                    $_SESSION['moodle_token'] = $authResult['token'];
-                    header("Location: profile.php");
-                    exit;
-                } else {
-                    echo "Moodle Authentication Error: " . $authResult['error']['message'];
-                }
-            } else {
-                echo "Invalid password.";
-            }
-        } else {
-            echo "User not found.";
-        }
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Invalid CSRF token');
     }
+
+    // Sanitize input
+    $username = htmlspecialchars($_POST['username']);
+    $password = htmlspecialchars($_POST['password']);
+
+    // Check if the user exists in the database
+    $sql = "SELECT * FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+
+    if ($user && password_verify($password, $user['Password'])) {
+        // Password is correct, start a session
+        session_regenerate_id(true);
+
+        $_SESSION['username'] = $user['Username'];
+        $_SESSION['firstname'] = $user['First_Name'];
+        $_SESSION['lastname'] = $user['Last_Name'];
+        $_SESSION['email'] = $user['Email'];
+        $_SESSION['institutional_email'] = $user['Institutional_Email'];
+        $_SESSION['identification_number'] = $user['Identification_Number'];
+        $_SESSION['faculty'] = $user['Faculty_Id'];
+        $_SESSION['role'] = $user['Role_Id'];
+        $_SESSION['school'] = $user['School_Id'];
+        $_SESSION['phone'] = $user['Phone'];
+        $_SESSION['moodle_id'] = $user['Moodle_Id'];
+        $_SESSION['token'] = $user['Token'];
+        $_SESSION['updated_at'] = $user['Updated_At'];
+        $_SESSION['created_at'] = $user['Created_At'];
+        $_SESSION['id'] = $user['Id'];
+        $_SESSION['validation'] = $user['Validation'];
+        
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        // Invalid credentials
+        echo "<script>alert('Invalid username or password.');</script>";
+    }
+
+    $stmt->close();
 }
+
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <style>
-        /* Your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-group {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
     </style>
 </head>
 <body>
+
+
+<?php
+require 'header.php';
+?>
+
+
     <div class="form-group">
         <form id="login" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-            <h2>Login</h2>
+           
+        
+        <h2>Login</h2>
+
+            <?php
+            $csrf_token = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token'] = $csrf_token;
+            ?>
+
+            <!-- Add hidden input for role -->
             
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="username" required>
 
