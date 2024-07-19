@@ -7,7 +7,7 @@ $sql = "SELECT u.*, s.validation_request
         FROM users u 
         LEFT JOIN status s ON u.Id = s.user_id 
         WHERE u.validation = 'not_validated'";
-$result = mysqli_query($conn, $sql);
+$result = mysqli_query($conn, $sql); 
 
 if (mysqli_num_rows($result) > 0) {
     echo "<h2>Users Pending Validation</h2>";
