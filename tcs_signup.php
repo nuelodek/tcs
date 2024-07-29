@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!(isset($user_data['users']) && count($user_data['users']) > 0)) {
         // User does not exist in Moodle, proceed to insert into database
-        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+      
 
         $sql = "INSERT INTO users (Username, Password, First_Name, Last_Name, Email, Institutional_Email, Moodle_Id, Identification_Number, Faculty_Id, Created_At, Role_Id, Token, Updated_At, School_Id, Phone, Validation) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, 'not_validated')";
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare($sql);
 
         try {
-            $stmt->bind_param("sssssssisisiss", $username, $password_hash, $firstname, $lastname, $email, $institutional_email, $moodle_id, $identification_number, $faculty, $role, $token, $updated_at, $school, $phone);
+            $stmt->bind_param("sssssssisisiss", $username, $password, $firstname, $lastname, $email, $institutional_email, $moodle_id, $identification_number, $faculty, $role, $token, $updated_at, $school, $phone);
             $stmt->execute();
             echo "<script>alert('User successfully registered.'); setTimeout(function() { window.location.href = 'tcs_login.php'; }, 5000);</script>";
         } catch (mysqli_sql_exception $e) {

@@ -63,4 +63,3 @@ if ($assign_result !== false) {
 } else {
     echo json_encode(['error' => 'Failed to assign roles using Moodle API.']);
 }
-?>

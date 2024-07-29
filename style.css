@@ -18,3 +18,11 @@ header {
 .social-media a:hover {
     color: #0056b3;
 }
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #000000;
+}   

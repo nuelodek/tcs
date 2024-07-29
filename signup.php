@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Password validation
             if (preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/', $password)) {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $hashed_password = md5($password);
 
                 $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
                 $stmt->bind_param("ss", $username, $hashed_password);

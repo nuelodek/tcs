@@ -63,4 +63,3 @@ if ($response === false) {
 // Close cURL session
 curl_close($ch);
 
-?>

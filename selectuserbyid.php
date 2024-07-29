@@ -89,5 +89,3 @@ if (isset($users['errorcode'])) {
         echo 'No users found.';
     }
 }
-
-?>

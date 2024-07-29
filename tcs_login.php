@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
-    if ($user && password_verify($password, $user['Password'])) {
+    if ($user && $password === $user['Password']) {
         // Password is correct, start a session
         session_regenerate_id(true);
 

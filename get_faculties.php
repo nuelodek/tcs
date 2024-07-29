@@ -49,4 +49,4 @@ if ($faculties) {
 } else {
     echo json_encode([]);
 }
-?>
+
