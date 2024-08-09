@@ -159,6 +159,9 @@ require 'header.php';
 
             <input type="submit" name="submit" value="Login">
         </form>
+
+        <p>Not an admin, go to <a href="tcs_login.php" style="color: grey;">Teacher's Login</a></p>
+
     </div>
 </body>
 </html>

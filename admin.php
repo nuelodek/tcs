@@ -1,6 +1,7 @@
 <?php
 session_start(); // Start the session
 require 'db.php';
+require 'triggerfaculties.php';
 // Check if user is logged in
 if (!isset($_SESSION['username']) || $_SESSION['role'] != 1) {
     header("Location: loginadmin.php"); // Redirect to login page if not logged in or not an admin
@@ -79,13 +80,15 @@ $isValidated = ($validation === 'validated');
         <h2> Hi <?php echo $firstname; ?>, what would you like to do today?</h3>
         
          <a href="#" class="checkusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUsercreate()">Create User</a>
-         <a href="#" class="check-solicitations" style="margin-right: 15px; text-decoration: none;" onclick="toggleSolicitations()">Accept Solicitations</a>
+         <!-- <a href="#" class="check-solicitations" style="margin-right: 15px; text-decoration: none;" onclick="toggleSolicitations()">Accept Solicitations</a> -->
          <a href="#" class="create-course" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCourse()">Create Course</a>
          <a href="#" class="create-category" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCategory()">Create Category</a>
          <a href="#" class="assign-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignRoles()">Assign Roles</a>
-         <a href="#" class="modify-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleModifyData()">Modify Data</a>
-         <a href="#" class="assign-tasks" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignTasks()">Assign Tasks</a>        
-        <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
+         <a href="#" class="user-list" style="margin-right: 15px; text-decoration: none;" onclick="toggleUserCheck()">User List</a>
+         <a href="#" class="all-courses" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewCourses()">View Courses </a>        
+     
+     
+         <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
 
 <style>
 a:hover {
@@ -120,7 +123,7 @@ a:hover {
     </thead>
     <tbody>
         <?php
-        $query = "SELECT * FROM users WHERE validation = 'not_validated' AND role_id = 2";
+        $query = "SELECT * FROM users WHERE validation = 'not_validated' AND role_id = 3";
         $result = mysqli_query($conn, $query);
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
@@ -201,8 +204,18 @@ a:hover {
       
 
         // SQL query to get all course information
-        $sql = "SELECT Id, Category_Id, Name, Period_Id, Type_of_Course_Id, Descriptive_Synthesis, Development_Competencies, Content_Structure, Teaching_Strategies, Technology_Tools, Assessment_Strategies, Programmatic_Synopsis FROM courses";
-      
+        $sql = "SELECT c.Id, c.Category_Id, c.Name, c.Period_Id, c.Type_of_Course_Id, c.Descriptive_Synthesis, c.Development_Competencies, c.Content_Structure, c.Teaching_Strategies, c.Technology_Tools, c.Assessment_Strategies, c.Programmatic_Synopsis, r.Status_Id, r.Id AS Request_Id, r.Applicant_Id, r.Coordinator_Id, r.rejection_reason,
+        cat.Name AS Category_Name, CONCAT(toc.Name, ' - ', toc.Field) AS Type_of_Course_Name, p.Name AS Period_Name,
+        u_applicant.Email AS Applicant_Email, u_coordinator.Email AS Coordinator_Email
+        FROM courses c
+        JOIN requests r ON c.Id = r.Course_Id
+        JOIN categories cat ON c.Category_Id = cat.Id
+        JOIN types_of_courses toc ON c.Type_of_Course_Id = toc.Id
+        JOIN periods p ON c.Period_Id = p.Id
+        LEFT JOIN users u_applicant ON r.Applicant_Id = u_applicant.Id
+        LEFT JOIN users u_coordinator ON r.Coordinator_Id = u_coordinator.Id
+        WHERE r.Status_Id = 2";        
+        
         $result = $conn->query($sql);
       
         if ($result->num_rows > 0) {
@@ -243,6 +256,8 @@ a:hover {
                 echo "<td style='padding: 12px;'>
                     <form action='create_course.php' method='post'>
                         <input type='hidden' name='id' value='" . $row['Id'] . "'>
+                        <input type='hidden' name='request_id' value='" . $row['Request_Id'] . "'>
+                        <input type='hidden' name='applicat_id' value='" .$row['Applicant_Id'] . "'>
                         <input type='hidden' name='name' value='" . $row['Name'] . "'>
                         <input type='hidden' name='category_id' value='" . $row['Category_Id'] . "'>
                         <input type='hidden' name='period_id' value='" . $row['Period_Id'] . "'>
@@ -254,6 +269,12 @@ a:hover {
                         <input type='hidden' name='technology_tools' value='" . $row['Technology_Tools'] . "'>
                         <input type='hidden' name='assessment_strategies' value='" . $row['Assessment_Strategies'] . "'>
                         <input type='hidden' name='programmatic_synopsis' value='" . $row['Programmatic_Synopsis'] . "'>
+                        <input type='hidden' name='applicant_email' value='" . $row['Applicant_Email'] . "'>
+                        <input type='hidden' name='coordinator_email' value='" . $row['Coordinator_Email'] . "'>
+                        <input type='hidden' name='Category_Name' value='" . $row["Category_Name"] . "'>
+                        <input type='hidden' name='Period_Name' value='" . $row["Period_Name"] . "'>
+                        <input type='' name='name_course' value='" . $row["Type_of_Course_Name"] . "'>
+
                         <button type='submit' class='createuserbutton'>Create Course</button>
                     </form>
                 </td>";
@@ -262,13 +283,245 @@ a:hover {
             echo "</tbody>";
             echo "</table>";
         } else {
-            echo "0 results";
+            echo "No courses pending approval";
         }
       
         $conn->close();
         ?>
 
       </div>   
+
+
+      <div class="assignroles" style="display: none;">
+        <h2>Assign Roles</h2>
+
+<?php
+// Assuming you have already established a database connection
+include 'db.php';
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT * FROM Users WHERE Role_Id IN (2, 3)";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    echo "<table style='border-collapse: collapse; width: 100%; margin: 0 auto;'>";
+    echo "<thead><tr style='background-color: #f2f2f2;'><th style='padding: 12px; text-align: left;'>ID</th><th style='padding: 12px; text-align: left;'>Username</th><th style='padding: 12px; text-align: left;'>Fullname</th><th style='padding: 12px; text-align: left;'>Role</th><th style='padding: 12px; text-align: left;'>Action</th></tr></thead>";
+    echo "<tbody>";
+    while($row = $result->fetch_assoc()) {
+        echo "<tr style='border-bottom: 1px solid #ddd;'>";
+        echo "<td style='padding: 12px;'>" . $row["Id"] . "</td>";
+        echo "<td>". $row["Username"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["First_Name"] . " " . $row["Last_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>";
+        if ($row["Role_Id"] == 3) {
+            echo "Professor";
+        } elseif ($row["Role_Id"] == 2) {
+            echo "Coordinator";
+        } elseif ($row["Role_Id"] == 1) {
+            echo "Admin";
+        }
+        
+      
+        echo "</td>";
+        echo "<td style='padding: 12px;'>
+            <form action='assignroles.php' method='post'>
+                <input type='hidden' name='user_id' value='" . $row["Id"] . "'>
+                <input type='hidden' name='new_role_id' value='";
+                
+                if ($row["Role_Id"] == 2) {
+                    echo "3'><button type='submit' class='createuserbutton'>Downgrade Coordinator</button>";
+                } elseif ($row["Role_Id"] == 3) {
+                    echo "2'><button type='submit' class='createuserbutton'>Make Coordinator</button>";
+                }
+                
+            echo "</form>
+        </td>";
+        echo "</tr>";
+    }
+    echo "</tbody>";
+    echo "</table>";
+} else {
+    echo "No users found.";
+}
+
+$conn->close();
+?>
+
+
+        </div>
+
+
+<div class="categorycheck" style="display:none;">
+    <h2> Pending Category </h2>
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+include 'db.php';
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT * FROM categories WHERE Status = 'pending'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    echo "<h2>Pending Categories</h2>";
+    echo "<table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'>";
+    echo "<thead>";
+    echo "<tr style='background-color: #f2f2f2;'>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>ID</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Name</th>";
+    echo "<th style='padding: 12 pixels; text-align: left; border-bottom: 2px solid #ddd;'> Select Category</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Status</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Action</th>";
+    echo "</tr>";
+    echo "</thead>";
+    echo "<tbody>";
+    while($row = $result->fetch_assoc()) {
+        echo "<tr style='border-bottom: 1px solid #ddd;'>";
+        echo "<td style='padding: 12px;'>" . $row["Id"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["status"] . "</td>";
+
+
+
+        
+$moodle_url = 'https://informaticajv.net/prueba/webservice/rest/server.php';
+$token = 'aaa9b3ecc791044b0bd74c009882b074';
+$function = 'core_course_get_categories';
+
+// Prepare the request parameters
+$params = array(
+    'wstoken' => $token,
+    'wsfunction' => $function,
+    'moodlewsrestformat' => 'json'
+);
+
+// Make the API request
+$ch = curl_init($moodle_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+$response = curl_exec($ch);
+curl_close($ch);
+
+// Decode the JSON response
+$categories = json_decode($response, true);
+
+// Generate the select element
+echo '<select name="category" id="category" required onchange="document.getElementById(\'selected_category\').value = this.value;">';
+echo '<option value ="" selected="" disabled> Select a parent category </option>';
+
+foreach ($categories as $category) {
+    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+}
+echo '</select>';
+        echo "<td style='padding: 12px;'>
+            <form action='create_cat.php' method='post'>
+                <input type='hidden' name='category_id' value='" . $row["Id"] . "'>
+                <input type='hidden' name='category_name' value='" . $row["Name"] . "'>
+                <input type='' name='parent_category_id' id='selected_category' value=''>
+                <button type='submit' class='createuserbutton'>Approve Category</button>
+            </form>
+        </td>";
+        echo "</tr>";
+    }
+    echo "</tbody>";
+    echo "</table>";
+} else {
+    echo "<p>No pending categories found.</p>";
+}
+
+$conn->close();
+?>
+
+</div>
+
+<div class="usercheck" style="display: none;"> 
+
+
+
+<?php
+include 'db.php';
+// Enable error reporting
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+$sql = "SELECT u.*, f.Name AS Faculty_Name, s.Name AS School_Name, r.Role AS Role_Name
+        FROM users u
+        LEFT JOIN Faculties f ON u.Faculty_Id = f.Id
+        LEFT JOIN Schools s ON u.School_Id = s.Id
+        LEFT JOIN Roles r ON u.Role_Id = r.Id";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    echo "<h2>User List</h2>";
+    echo "<table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'>";
+    echo "<thead>";
+    echo "<tr style='background-color: #f2f2f2;'>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>ID</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Username</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>First Name</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Last Name</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Email</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Institutional Email</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Moodle ID</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Identification Number</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Faculty</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Role</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>School</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Phone</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Validation</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Created At</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Updated At</th>";
+    echo "</tr>";
+    echo "</thead>";
+    echo "<tbody>";
+    while($row = $result->fetch_assoc()) {
+        echo "<tr style='border-bottom: 1px solid #ddd;'>";
+        echo "<td style='padding: 12px;'>" . $row["Id"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Username"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["First_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Last_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Email"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Institutional_Email"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Moodle_Id"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Identification_Number"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Faculty_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Role_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["School_Name"] . "</td>";       
+         echo "<td style='padding: 12px;'>" . $row["Phone"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Validation"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Created_At"] . "</td>";
+        echo "<td style= 'padding: 12px;'>" .$row["Updated_At"] . "</`td>";
+        
+        echo "</tr>";
+    }
+    echo "</tbody>";
+    echo "</table>";
+} else {
+    echo "<p>No users found.</p>";
+}
+
+$conn->close();
+?>
+
+</div>
+
+<div class="allcoursescheck" style="display: none;">
+
+<?php include 'allcourses.php'; ?>
+    </div>
 
     </div> <!-- main div container -->
 
@@ -278,6 +531,9 @@ a:hover {
       document.querySelector(".solicitationscheck").style.display = "block";
       document.querySelector(".validationscheck").style.display = "none";
       document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
 
     }
 
@@ -285,6 +541,11 @@ a:hover {
       document.querySelector(".solicitationscheck").style.display = "none";
       document.querySelector(".validationscheck").style.display = "block";
       document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
 
     }
 
@@ -292,10 +553,59 @@ a:hover {
         document.querySelector(".solicitationscheck").style.display = "none";
         document.querySelector(".validationscheck").style.display = "none";
         document.querySelector(".coursescheck").style.display = "block";
+        document.querySelector(".assignroles").style.display = "none";
+        document.querySelector(".categorycheck").style.display = "none";
+        document.querySelector(".usercheck").style.display = "none";
+        document.querySelector(".allcoursescheck").style.display = "none";
 
     }
 
 
+    function toggleAssignRoles() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "block";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+
+    }
+
+
+    function toggleCreateCategory() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+
+
+    }
+
+
+    
+    function toggleUserCheck() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+
+    }
+
+    function toggleViewCourses() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+ document.querySelector(".allcoursescheck").style.display = "block";
+    }
 </script>
 </body>
 </html>

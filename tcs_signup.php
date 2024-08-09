@@ -332,6 +332,7 @@ $conn->close();
     <div class="form-group">
         <form id="signup" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" onsubmit="return validateForm()">
             <h2>Teacher Signup</h2>
+            <p>Already have an Professor account? <a href="tcs_login.php" style="color: grey;">Login here</a></p>
 
             <?php
             $csrf_token = bin2hex(random_bytes(32));

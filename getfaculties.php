@@ -10,13 +10,7 @@ $token = 'aec70f7a576bdc87212663cdccc3f76a';
 $params = [
     'wstoken' => $token,
     'wsfunction' => 'core_course_get_categories',
-    'moodlewsrestformat' => 'json',
-    'criteria' => [
-        [
-            'key' => 'parent',
-            'value' => '0' // Assuming top-level categories represent faculties
-        ]
-    ]
+    'moodlewsrestformat' => 'json'
 ];
 
 // Build URL with parameters
@@ -49,7 +43,9 @@ if ($response === false) {
         if (!empty($categories)) {
             echo '<select name="faculty">';
             foreach ($categories as $category) {
-                echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+                if ($category['parent'] == 0) {
+                    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+                }
             }
             echo '</select>';
         } else {
