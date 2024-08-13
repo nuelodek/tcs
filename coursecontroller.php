@@ -57,6 +57,7 @@
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
+        echo "<div style='overflow-x: auto;'>";
         echo "<table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'>";
         echo "<thead>";
         echo "<tr style='background-color: #f2f2f2;'>";
@@ -183,6 +184,7 @@
         }
         echo "</tbody>";
         echo "</table>";
+        echo "</div>";
     } else {
         if ($status_filter == '1') {
             echo "No courses have been submitted for your review.<br> Please check back later.";

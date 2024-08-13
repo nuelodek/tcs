@@ -86,7 +86,10 @@ $isValidated = ($validation === 'validated');
          <a href="#" class="assign-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignRoles()">Assign Roles</a>
          <a href="#" class="user-list" style="margin-right: 15px; text-decoration: none;" onclick="toggleUserCheck()">User List</a>
          <a href="#" class="all-courses" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewCourses()">View Courses </a>        
-     
+         <a href="#" class="manage-permissions" style="margin-right: 15px; text-decoration: none;" onclick="toggleManagePermissions()">Manage Permissions</a>
+
+
+
      
          <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
 
@@ -523,6 +526,13 @@ $conn->close();
 <?php include 'allcourses.php'; ?>
     </div>
 
+<div class="managepermissions" style="display:none;">
+
+    <?php include 'managepermissions.php'; ?>
+
+</div>
+
+
     </div> <!-- main div container -->
 
     
@@ -534,6 +544,7 @@ $conn->close();
       document.querySelector(".categorycheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
 
     }
 
@@ -546,6 +557,7 @@ $conn->close();
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
 
     }
 
@@ -557,6 +569,7 @@ $conn->close();
         document.querySelector(".categorycheck").style.display = "none";
         document.querySelector(".usercheck").style.display = "none";
         document.querySelector(".allcoursescheck").style.display = "none";
+        document.querySelector(".managepermissions").style.display = "none";
 
     }
 
@@ -569,6 +582,7 @@ $conn->close();
       document.querySelector(".categorycheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
 
     }
 
@@ -581,6 +595,7 @@ $conn->close();
       document.querySelector(".categorycheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
 
 
     }
@@ -595,6 +610,7 @@ $conn->close();
       document.querySelector(".categorycheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
 
     }
 
@@ -605,7 +621,22 @@ $conn->close();
       document.querySelector(".assignroles").style.display = "none";
       document.querySelector(".categorycheck").style.display = "none";
  document.querySelector(".allcoursescheck").style.display = "block";
+ document.querySelector(".managepermissions").style.display = "none";
+
     }
+
+
+    function toggleManagePermissions() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "block";
+    }
+
 </script>
 </body>
 </html>

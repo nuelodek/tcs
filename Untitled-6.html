@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Math Problem Solver</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script>
+		pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js';
+	</script>
+</head>
+<body>
+	<h1>Math Problem Solver</h1>
+	<form id="mathForm">
+		<label for="file">Upload File:</label>
+		<input type="file" id="file" name="file" accept="image/*,.pdf"><br><br>
+		
+		<button type="submit">Read File</button>
+	</form>
+
+	<div id="fileContent" style="display:none;">
+		<h2>File Content:</h2>
+		<img id="uploadedImage" style="max-width: 100%; display: none;" alt="Uploaded Image">
+		<pre id="pdfText" style="white-space: pre-wrap;"></pre>
+	</div>
+
+	<div id="ocrResult" style="display:none;">
+		<h2>OCR Result:</h2>
+		<p id="ocrText"></p>
+		
+		<label for="problemType">Select Problem Type:</label>
+		<select id="problemType" name="problemType">
+			<option value="quadratic">Quadratic Equation</option>
+			<option value="simultaneous">Simultaneous Equations</option>
+			<option value="partialFractions">Partial Fractions</option>
+		</select><br><br>
+
+		<button id="solveButton">Solve</button>
+	</div>
+
+	<div id="result"></div>
+
+	<script>
+	document.getElementById('mathForm').addEventListener('submit', function(e) {
+		e.preventDefault();
+
+		var fileInput = document.getElementById('file');
+		var file = fileInput.files[0];
+		
+		if (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/webp' || file.type.startsWith('image/')) {
+			// Display image
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var img = document.getElementById('uploadedImage');
+				img.src = e.target.result;
+				img.style.display = 'block';
+				document.getElementById('pdfText').style.display = 'none';
+				document.getElementById('fileContent').style.display = 'block';
+				
+				// Convert image to PDF
+				var imgObj = new Image();
+				imgObj.onload = function() {
+					var canvas = document.createElement('canvas');
+					var ctx = canvas.getContext('2d');
+					canvas.width = imgObj.width;
+					canvas.height = imgObj.height;
+					ctx.drawImage(imgObj, 0, 0, imgObj.width, imgObj.height);
+					
+					var { jsPDF } = window.jspdf;
+					var pdfDoc = new jsPDF();
+					pdfDoc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0);
+					
+					processPDF(pdfDoc.output('arraybuffer'));
+				};
+				imgObj.src = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		} else if (file.type === 'application/pdf') {
+			// Process PDF directly
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				document.getElementById('uploadedImage').style.display = 'none';
+				document.getElementById('pdfText').style.display = 'block';
+				document.getElementById('fileContent').style.display = 'block';
+				processPDF(e.target.result);
+			};
+			reader.readAsArrayBuffer(file);
+		} else {
+			alert('Unsupported file type. Please upload an image (JPEG, PNG, GIF, WebP) or PDF.');
+		}
+	});
+
+	function processPDF(pdfData) {
+		pdfjsLib.getDocument({data: pdfData}).promise.then(function(pdf) {
+			pdf.getPage(1).then(function(page) {
+				page.getTextContent().then(function(textContent) {
+					var text = textContent.items.map(function (s) { return s.str; }).join(' ');
+					document.getElementById('pdfText').innerText = text;
+					document.getElementById('ocrText').innerText = text;
+					document.getElementById('ocrResult').style.display = 'block';
+				});
+			});
+		});
+	}
+
+	document.getElementById('solveButton').addEventListener('click', function() {
+		const problemType = document.getElementById('problemType').value;
+		const ocrText = document.getElementById('ocrText').innerText;
+
+		if (problemType === 'quadratic') {
+			const coefficients = extractQuadraticCoefficients(ocrText);
+			if (coefficients) {
+				const solutions = solveQuadraticEquation(coefficients.a, coefficients.b, coefficients.c);
+				document.getElementById('result').textContent = 'Solutions: ' + solutions.join(', ');
+			} else {
+				document.getElementById('result').textContent = 'Unable to extract quadratic equation coefficients from the OCR result.';
+			}
+		} else if (problemType === 'simultaneous') {
+			// Add logic for solving simultaneous equations
+			document.getElementById('result').textContent = 'Simultaneous equations solver not implemented yet.';
+		} else if (problemType === 'partialFractions') {
+			// Add logic for solving partial fractions
+			document.getElementById('result').textContent = 'Partial fractions solver not implemented yet.';
+		}
+	});
+
+	function extractQuadraticCoefficients(text) {
+		// This is a placeholder function. You'll need to implement proper parsing logic.
+		const match = text.match(/(-?\d*)\s*x\^2\s*([+-]\d*)\s*x\s*([+-]\d+)/);
+		if (match) {
+			return {
+				a: parseFloat(match[1] || 1),
+				b: parseFloat(match[2] || 0),
+				c: parseFloat(match[3] || 0)
+			};
+		}
+		return null;
+	}
+
+	function solveQuadraticEquation(a, b, c) {
+		const discriminant = b * b - 4 * a * c;
+		if (discriminant > 0) {
+			const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+			const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+			return [x1, x2];
+		} else if (discriminant === 0) {
+			const x = -b / (2 * a);
+			return [x];
+		} else {
+			return [];
+		}
+	}
+	</script>
+</body>
+</html>

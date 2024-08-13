@@ -1,0 +1,221 @@
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>Math Problem Solver</title>
+		</head>
+		<body>
+			<h1>Math Problem Solver</h1>
+			<form id="mathForm">
+				<label for="imageFile">Upload Image:</label>
+				<input type="file" id="imageFile" name="image" accept="image/*,.pdf"><br><br>
+		
+				<label for="imageUrl">Image URL:</label>
+				<input type="url" id="imageUrl" name="url"><br><br>
+
+				<button type="submit">Read Image</button>
+			</form>
+
+			<div id="ocrResult" style="display:none;">
+				<h2>OCR Result:</h2>
+				<p id="ocrText"></p>
+		
+				<label for="problemType">Select Problem Type:</label>
+				<select id="problemType" name="problemType">
+					<option value="quadratic">Quadratic Equation</option>
+					<option value="simultaneous">Simultaneous Equations</option>
+					<option value="partialFractions">Partial Fractions</option>
+					<option value="normalFraction">Normal Fraction</option>
+					<option value="arithmetic">Arithmetic</option>
+				</select><br><br>
+
+				<button id="solveButton">Solve</button>
+			</div>
+
+			<div id="result"></div>
+
+			<script>
+			document.getElementById('mathForm').addEventListener('submit', function(e) {
+				e.preventDefault();
+
+				const data = new FormData(this);
+				const imageFile = document.getElementById('imageFile').files[0];
+				const imageUrl = document.getElementById('imageUrl').value;
+
+				if (imageFile) {
+					data.append('image', imageFile);
+				}
+				if (imageUrl) {
+					data.append('url', imageUrl);
+				}
+
+				const xhr = new XMLHttpRequest();
+				xhr.withCredentials = true;
+
+				xhr.addEventListener('readystatechange', function () {
+					if (this.readyState === this.DONE) {
+						const response = JSON.parse(this.responseText);
+						if (response.results && response.results[0].entities) {
+							const textEntity = response.results[0].entities.find(entity => entity.kind === 'objects' && entity.name === 'text');
+							if (textEntity && textEntity.objects && textEntity.objects[0].entities) {
+								const textContent = textEntity.objects[0].entities.find(entity => entity.kind === 'text' && entity.name === 'text');
+								if (textContent) {
+									document.getElementById('ocrText').innerText = textContent.text;
+									document.getElementById('ocrResult').style.display = 'block';
+								}
+							}
+						}
+					}
+				});
+
+				xhr.open('POST', 'https://ocr43.p.rapidapi.com/v1/results');
+				xhr.setRequestHeader('x-rapidapi-key', '18bedc1cebmsh3b384795340dd86p125cc0jsn03c7fa812fea');
+				xhr.setRequestHeader('x-rapidapi-host', 'ocr43.p.rapidapi.com');
+
+				xhr.send(data);
+			});
+
+			document.getElementById('solveButton').addEventListener('click', function() {
+				const problemType = document.getElementById('problemType').value;
+				const ocrText = document.getElementById('ocrText').innerText;
+
+				if (problemType === 'quadratic') {
+					const coefficients = extractQuadraticCoefficients(ocrText);
+					if (coefficients) {
+						const solutions = solveQuadraticEquation(coefficients.a, coefficients.b, coefficients.c);
+						document.getElementById('result').textContent = 'Solutions: ' + solutions.join(', ');
+					} else {
+						document.getElementById('result').textContent = 'Unable to extract quadratic equation coefficients from the OCR result.';
+					}
+				} else if (problemType === 'simultaneous') {
+					const equations = extractSimultaneousEquations(ocrText);
+					if (equations) {
+						const solution = solveSimultaneousEquations(equations);
+						document.getElementById('result').textContent = 'Solution: ' + JSON.stringify(solution);
+					} else {
+						document.getElementById('result').textContent = 'Unable to extract simultaneous equations from the OCR result.';
+					}
+				} else if (problemType === 'partialFractions') {
+					const expression = extractPartialFractionExpression(ocrText);
+					if (expression) {
+						const result = solvePartialFractions(expression);
+						document.getElementById('result').textContent = 'Partial Fractions: ' + result;
+					} else {
+						document.getElementById('result').textContent = 'Unable to extract partial fraction expression from the OCR result.';
+					}
+				} else if (problemType === 'normalFraction') {
+					const fraction = extractNormalFraction(ocrText);
+					if (fraction) {
+						const result = simplifyFraction(fraction);
+						document.getElementById('result').textContent = 'Simplified Fraction: ' + result;
+					} else {
+						document.getElementById('result').textContent = 'Unable to extract normal fraction from the OCR result.';
+					}
+				} else if (problemType === 'arithmetic') {
+					const expression = extractArithmeticExpression(ocrText);
+					if (expression) {
+						const result = evaluateArithmeticExpression(expression);
+						document.getElementById('result').textContent = 'Result: ' + result;
+					} else {
+						document.getElementById('result').textContent = 'Unable to extract arithmetic expression from the OCR result.';
+					}
+				}
+			});
+
+			function extractQuadraticCoefficients(text) {
+				const match = text.match(/(-?\d*)\s*x\^?2\s*([+-]\d*)\s*x\s*([+-]\d+)/);
+				if (match) {
+					return {
+						a: parseFloat(match[1] || 1),
+						b: parseFloat(match[2] || 0),
+						c: parseFloat(match[3] || 0)
+					};
+				}
+				return null;
+			}
+
+			function solveQuadraticEquation(a, b, c) {
+				const discriminant = b * b - 4 * a * c;
+				if (discriminant > 0) {
+					const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+					const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+					return [x1, x2];
+				} else if (discriminant === 0) {
+					const x = -b / (2 * a);
+					return [x];
+				} else {
+					return [];
+				}
+			}
+
+			function extractSimultaneousEquations(text) {
+				const lines = text.split('\n');
+				const equations = lines.map(line => {
+					const match = line.match(/(-?\d*)x\s*([+-]\d*)y\s*=\s*(-?\d+)/);
+					if (match) {
+						return {
+							a: parseFloat(match[1] || 1),
+							b: parseFloat(match[2] || 0),
+							c: parseFloat(match[3] || 0)
+						};
+					}
+					return null;
+				}).filter(eq => eq !== null);
+
+				return equations.length === 2 ? equations : null;
+			}
+
+			function solveSimultaneousEquations(equations) {
+				const [eq1, eq2] = equations;
+				const det = eq1.a * eq2.b - eq1.b * eq2.a;
+				if (det === 0) return null;
+
+				const x = (eq1.c * eq2.b - eq1.b * eq2.c) / det;
+				const y = (eq1.a * eq2.c - eq1.c * eq2.a) / det;
+
+				return { x, y };
+			}
+
+			function extractPartialFractionExpression(text) {
+				// This is a placeholder. Implement proper parsing logic for partial fractions.
+				return text.trim();
+			}
+
+			function solvePartialFractions(expression) {
+				// This is a placeholder. Implement actual partial fraction decomposition.
+				return "Partial fraction decomposition not implemented.";
+			}
+
+			function extractNormalFraction(text) {
+				const match = text.match(/(\d+)\s*\/\s*(\d+)/);
+				if (match) {
+					return {
+						numerator: parseInt(match[1]),
+						denominator: parseInt(match[2])
+					};
+				}
+				return null;
+			}
+
+			function simplifyFraction(fraction) {
+				const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+				const divisor = gcd(fraction.numerator, fraction.denominator);
+				return `${fraction.numerator / divisor}/${fraction.denominator / divisor}`;
+			}
+
+			function extractArithmeticExpression(text) {
+				// This is a simple extraction. You might need more complex parsing for real-world scenarios.
+				return text.replace(/[^0-9+\-*/().]/g, '');
+			}
+
+			function evaluateArithmeticExpression(expression) {
+				try {
+					return eval(expression);
+				} catch (error) {
+					return "Invalid expression";
+				}
+			}
+			</script>
+		</body>
+		</html>
