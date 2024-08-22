@@ -343,9 +343,40 @@ $conn->close();
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="Username" required>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Password" required>
-
+                    <label for="password">Password (Must contain special character, uppercase, lowercase, number, and be 8+ characters)</label>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" placeholder="Password" required>
+                        <i class="far fa-eye" id="togglePassword"></i>
+                    </div>
+                    <style>
+                        .password-container {
+                            position: relative;
+                        }
+                        .password-container input {
+                            padding-right: 30px;
+                        }
+                        .password-container .far {
+                            position: absolute;
+                            top: 50%;
+                            right: 10px;
+                            transform: translateY(-50%);
+                            cursor: pointer;
+                        }
+                        #togglePassword {
+           margin-top: -10px;
+                        }
+                    </style>
+                    <script>
+                        const togglePassword = document.querySelector('#togglePassword');
+                        const password = document.querySelector('#password');
+                
+                        togglePassword.addEventListener('click', function (e) {
+                            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                            password.setAttribute('type', type);
+                            this.classList.toggle('fa-eye-slash');
+                        });
+                    </script>
+                    
             <label for="firstname">Firstname</label>
             <input type="text" id="firstname" name="firstname" required>
 

@@ -26,6 +26,7 @@ if (mysqli_num_rows($result) > 0) {
     echo "<thead>";
     echo "<tr style='background-color: #f2f2f2;'>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Name</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Username</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Current Permissions</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Add Permission</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Delete Permission</th>";
@@ -36,6 +37,7 @@ if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         $user_id = $row['Id'];
         $user_name = $row['First_Name'] . ' ' . $row['Last_Name'];
+        $username = $row['Username'];
 
         // Check if the coordinator has permissions
         $permission_sql = "SELECT permission FROM user_permissions WHERE user_id = $user_id";
@@ -43,6 +45,7 @@ if (mysqli_num_rows($result) > 0) {
 
         echo "<tr style='border-bottom: 1px solid #ddd;'>";
         echo "<td style='padding: 12px;'>$user_name</td>";
+        echo "<td style='padding: 12px;'>$username</td>";
         
         // Current Permissions
         echo "<td style='padding: 12px;'>";

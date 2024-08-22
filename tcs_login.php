@@ -154,21 +154,39 @@ require 'header.php';
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="username" required>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="password" required>
-
+                    <label for="password">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="password" placeholder="password" required>
+                        <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="fas fa-eye-slash"></i>
+                        </span>
+                    </div>
+                    <script>
+                        const togglePassword = document.querySelector('#togglePassword');
+                        const password = document.querySelector('#password');
+                        togglePassword.addEventListener('click', function (e) {
+                            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                            password.setAttribute('type', type);
+                            this.querySelector('i').classList.toggle('fa-eye');
+                            this.querySelector('i').classList.toggle('fa-eye-slash');
+                        });
+                    </script>
+                    <style>
+                        #togglePassword {
+                          margin-top: -10px;
+                        }
+                    </style>
             <input type="submit" name="submit" value="Login">
         </form>
            
         
 
             <p style="text-align: left; margin: 15x 0;"> Useful Links: <a href="loginadmin.php" style="color: grey;">Admin Login</a> or 
-                <a href="signup.php" style="color: grey;">Teacher Signup</a>
+                <a href="tcs_signup.php" style="color: grey;">Teacher Signup</a>
                 </p>
-         <p style="margin: 1px 0;">
+             <p style="margin: 1px 0;">
                 Can't access your account?
                 <a href="forgot_password.php" style="color: grey;"> Reset Pasword </a> <br>
-    
                 </p>
                 
 

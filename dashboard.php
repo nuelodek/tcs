@@ -82,6 +82,13 @@ $isValidated = ($validation === 'validated');
             border-radius: 4px;
         }
 
+        input[type="password"] {
+            width: 97.5%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
         select {
             width: 98.5%;
             padding: 8px;
@@ -197,22 +204,19 @@ $isValidated = ($validation === 'validated');
         <?php endif; ?>
 
 
-        <?php if ($role == 2): ?>
+        <?php if ($role == 2 ): ?>
         
+
+                 
 
 
         <!-- User is validated, display the dashboard -->
         <h1>Cordinator's Dashboard </a>
-        <h2> Hi <?php echo $firstname; ?>, what would you like to do today?</h3>
+
+                
+
+        <?php include "teachermenutoggle.php" ?>
         
-         <a href="#" class="checkusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUsercreate()">Create User</a>
-         <a href="#" class="check-solicitations" style="margin-right: 15px; text-decoration: none;" onclick="toggleSolicitations()">Accept Solicitations</a>
-         <a href="#" class="create-course" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCourse()">Create Course</a>
-         <a href="#" class="create-category" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCategory()">Create Category</a>
-         <a href="#" class="assign-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignRoles()">Assign Roles</a>
-         <a href="#" class="modify-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleModifyData()">Modify Data</a>
-         <a href="#" class="assign-tasks" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignTasks()">Assign Tasks</a>        
-        <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
 
             <style>
             a:hover {
@@ -221,48 +225,38 @@ $isValidated = ($validation === 'validated');
             </style>
 
 
-
-
-<div class="solicitationscheck" style="display:none;"> 
-         
-</div>
-
       <div class="coursescheck"> 
       <h2>Pending Courses</h2>
 
-
         <?php include 'coursecontroller.php'; ?> 
 
-
-
       </div>   
+   
+<div class="solicitcoursecheck">
+    <?php include "solicationsform.php" ?>
+</div>
 
+<div class="allcoursescheck">
+    <?php include "allcoursesuser.php" ?>
+</div>
 
-    
-    <script>
-    function toggleSolicitations() {
-      document.querySelector(".solicitationscheck").style.display = "block";
-      document.querySelector(".validationscheck").style.display = "none";
-      document.querySelector(".coursescheck").style.display = "none";
+<div class="approvedcoursescheck" style="display: none;">
+    <?php include "approvedcourses.php" ?>
 
-    }
+</div>
 
-    function toggleUsercreate() {
-      document.querySelector(".solicitationscheck").style.display = "none";
-      document.querySelector(".validationscheck").style.display = "block";
-      document.querySelector(".coursescheck").style.display = "none";
+<div class="rejectedcoursescheck" style="display: none;">
+<?php include "rejectedcourses.php" ?>
 
-    }
+</div>
 
-    function toggleCreateCourse () {
-        document.querySelector(".solicitationscheck").style.display = "none";
-        document.querySelector(".validationscheck").style.display = "none";
-        document.querySelector(".coursescheck").style.display = "block";
+<div class="activitylogcheck">
+    <?php include "activitylogs.php" ?>
+</div>
 
-    }
-
-</script>        
-
+<div class="updateprofilecheck" style="display: none;">
+    <?php include "updateprofileform.php" ?>
+</div>
 
 
 
@@ -274,11 +268,16 @@ $isValidated = ($validation === 'validated');
         <!-- User is not validated, display the validation request form -->
          <div class="form-group" style="margin-left: 20px;">
         <h2 >Hello <?php echo $firstname; ?>! <br> Your account is not yet validated</h2>
-                <p>Please wait for the admin to validate you</p>
+                <p>Please wait for the admin to validate you. Once validated, you will recieve an email. 
+                    <br> Please endeavour to check your email for further instructions.
+                </p>
 
    
             <button type="submit" class="btn btn-danger" onclick="window.location.href='logout.php'">Logout</button>
-        
+<div class="updateprofilecheck">
+    <?php include "updateprofileform.php" ?>
+</div>
+
 
     </div>
     <?php endif; ?>
