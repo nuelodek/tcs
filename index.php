@@ -1,15 +1,5 @@
     <?php
-    // index.php for TCS University
-
-    // Start the session
     session_start();
-
-    // Include necessary files
-    require_once 'config.php';
-    require_once 'functions.php';
-
-    // Check if the user is logged in
-    $loggedIn = isset($_SESSION['user_id']);
 
     // Header
     include 'header.php';
