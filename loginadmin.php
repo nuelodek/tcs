@@ -25,32 +25,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
-    if ($user && $password === $user['Password']) {
-        // Password is correct, start a session
-        session_regenerate_id(true);
+    if ($user) {
+        if ($password === $user['Password']) {
+            if ($user['Role_Id'] == 1) { // Assuming Role_Id 1 is for admin
+                // Password is correct and user is admin, start a session
+                session_regenerate_id(true);
 
-        $_SESSION['username'] = $user['Username'];
-        $_SESSION['firstname'] = $user['First_Name'];
-        $_SESSION['lastname'] = $user['Last_Name'];
-        $_SESSION['email'] = $user['Email'];
-        $_SESSION['institutional_email'] = $user['Institutional_Email'];
-        $_SESSION['identification_number'] = $user['Identification_Number'];
-        $_SESSION['faculty'] = $user['Faculty_Id'];
-        $_SESSION['role'] = $user['Role_Id'];
-        $_SESSION['school'] = $user['School_Id'];
-        $_SESSION['phone'] = $user['Phone'];
-        $_SESSION['moodle_id'] = $user['Moodle_Id'];
-        $_SESSION['token'] = $user['Token'];
-        $_SESSION['updated_at'] = $user['Updated_At'];
-        $_SESSION['created_at'] = $user['Created_At'];
-        $_SESSION['id'] = $user['Id'];
-        $_SESSION['validation'] = $user['Validation'];
-        
-        header("Location: admin.php");
-        exit();
+                $_SESSION['username'] = $user['Username'];
+                $_SESSION['firstname'] = $user['First_Name'];
+                $_SESSION['lastname'] = $user['Last_Name'];
+                $_SESSION['email'] = $user['Email'];
+                $_SESSION['institutional_email'] = $user['Institutional_Email'];
+                $_SESSION['identification_number'] = $user['Identification_Number'];
+                $_SESSION['faculty'] = $user['Faculty_Id'];
+                $_SESSION['role'] = $user['Role_Id'];
+                $_SESSION['school'] = $user['School_Id'];
+                $_SESSION['phone'] = $user['Phone'];
+                $_SESSION['moodle_id'] = $user['Moodle_Id'];
+                $_SESSION['token'] = $user['Token'];
+                $_SESSION['updated_at'] = $user['Updated_At'];
+                $_SESSION['created_at'] = $user['Created_At'];
+                $_SESSION['id'] = $user['Id'];
+                $_SESSION['validation'] = $user['Validation'];
+                
+                header("Location: admin.php");
+                exit();
+            } else {
+                // User is not an admin
+                echo "<script>alert('Access denied. You are not an admin.');</script>";
+            }
+        } else {
+            // Invalid password
+            echo "<script>alert('Incorrect password.');</script>";
+        }
     } else {
-        // Invalid credentials
-        echo "<script>alert('Invalid username or password.');</script>";
+        // User not found
+        echo "<script>alert('Incorrect username.');</script>";
     }
 
     $stmt->close();
@@ -58,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -140,7 +149,7 @@ require 'header.php';
         <form id="login" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
            
         
-        <h2>Login</h2>
+        <h2>Admin Login</h2>
 
             <?php
             $csrf_token = bin2hex(random_bytes(32));
@@ -155,8 +164,28 @@ require 'header.php';
             <input type="text" name="username" id="username" placeholder="username" required>
 
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="password" required>
-
+            <div style="position: relative;">
+                <input type="password" name="password" id="password" placeholder="password" required>
+                <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                    <i class="fas fa-eye-slash"></i>
+                </span>
+            </div>
+            
+            <script>
+                const togglePassword = document.querySelector('#togglePassword');
+                const password = document.querySelector('#password');
+                togglePassword.addEventListener('click', function (e) {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            </script>
+            <style>
+                #togglePassword {
+                    margin-top: -10px;
+                }
+            </style>
             <input type="submit" name="submit" value="Login">
         </form>
 
