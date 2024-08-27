@@ -64,7 +64,7 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Teacher / Cordinator Login</title>
 
 
     <link rel="stylesheet" href="style.css">
@@ -140,7 +140,7 @@ require 'header.php';
         <form id="login" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
            
         
-        <h2>Login</h2>
+        <h2>Teacher / Cordinator Login</h2>
 
             <?php
             $csrf_token = bin2hex(random_bytes(32));

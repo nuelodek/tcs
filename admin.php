@@ -80,7 +80,8 @@ $isValidated = ($validation === 'validated');
         <h2> Hi <?php echo $firstname; ?>, what would you like to do today?</h3>
         
          <a href="#" class="checkusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUsercreate()">Create User</a>
-         <!-- <a href="#" class="check-solicitations" style="margin-right: 15px; text-decoration: none;" onclick="toggleSolicitations()">Accept Solicitations</a> -->
+         <a href="#" class="add-role" style="margin-right: 15px; text-decoration: none;" onclick="toggleAddRole()">Add Role</a>
+      
          <a href="#" class="create-course" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCourse()">Create Course</a>
          <a href="#" class="create-category" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCategory()">Create Category</a>
          <a href="#" class="assign-roles" style="margin-right: 15px; text-decoration: none;" onclick="toggleAssignRoles()">Assign Roles</a>
@@ -89,7 +90,8 @@ $isValidated = ($validation === 'validated');
          <a href="#" class="manage-permissions" style="margin-right: 15px; text-decoration: none;" onclick="toggleManagePermissions()">Manage Permissions</a> 
          
                   <a href="#" class="view-faculty" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewFaculty()">View Faculty</a>
-             
+                  <a href="#" class="activity-logs" style="margin-right: 15px; text-decoration: none;" onclick="toggleActivityLogs()">Activity Logs</a>
+
          <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
 
 <style>
@@ -311,13 +313,15 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     echo "<table style='border-collapse: collapse; width: 100%; margin: 0 auto;'>";
-    echo "<thead><tr style='background-color: #f2f2f2;'><th style='padding: 12px; text-align: left;'>ID</th><th style='padding: 12px; text-align: left;'>Username</th><th style='padding: 12px; text-align: left;'>Fullname</th><th style='padding: 12px; text-align: left;'>Role</th><th style='padding: 12px; text-align: left;'>Action</th></tr></thead>";
+    echo "<thead><tr style='background-color: #f2f2f2;'><th style='padding: 12px; text-align: left;'>ID</th><th style='padding: 12px; text-align: left;'>Username</th><th style='padding: 12px; text-align: left;'>Fullname</th><th style='padding: 12px; text-align: left;'>Email</th><th style='padding: 12px; text-align: left;'>Role</th><th style='padding: 12px; text-align: left;'>Action</th></tr></thead>";
     echo "<tbody>";
     while($row = $result->fetch_assoc()) {
         echo "<tr style='border-bottom: 1px solid #ddd;'>";
         echo "<td style='padding: 12px;'>" . $row["Id"] . "</td>";
         echo "<td>". $row["Username"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["First_Name"] . " " . $row["Last_Name"] . "</td>";
+        echo "<td style='padding: 12px;'>" . $row["Email"] . "</td>";
+        
         echo "<td style='padding: 12px;'>";
         if ($row["Role_Id"] == 3) {
             echo "Professor";
@@ -331,6 +335,7 @@ if ($result->num_rows > 0) {
         echo "</td>";
         echo "<td style='padding: 12px;'>
             <form action='assignroles.php' method='post'>
+                <input type='hidden' name='user_email' value='" . $row["Email"] . "'>
                 <input type='hidden' name='user_id' value='" . $row["Id"] . "'>
                 <input type='hidden' name='new_role_id' value='";
                 
@@ -357,8 +362,8 @@ $conn->close();
         </div>
 
 
-<div class="categorycheck" style="display:none;">
-    <h2> Pending Category </h2>
+<div class="categorycheck" style="display: none">
+    <h2> Pending Categories </h2>
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -375,63 +380,78 @@ $sql = "SELECT * FROM categories WHERE Status = 'pending'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    echo "<h2>Pending Categories</h2>";
     echo "<table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'>";
     echo "<thead>";
     echo "<tr style='background-color: #f2f2f2;'>";
-    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>ID</th>";
-    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Name</th>";
-    echo "<th style='padding: 12 pixels; text-align: left; border-bottom: 2px solid #ddd;'> Select Category</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Category ID</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Category Name</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Status</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Course ID</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Coordinator Email</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Applicant Email</th>";
+    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Select Parent Category</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Action</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
+
+    $moodle_url = 'https://informaticajv.net/prueba/webservice/rest/server.php';
+    $token = 'aaa9b3ecc791044b0bd74c009882b074';
+    $function = 'core_course_get_categories';
+
+    $params = array(
+        'wstoken' => $token,
+        'wsfunction' => $function,
+        'moodlewsrestformat' => 'json'
+    );
+
+    $ch = curl_init($moodle_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $categories = json_decode($response, true);
+
     while($row = $result->fetch_assoc()) {
+        $category_id = $row["Id"];
+        
+        $sql_details = "SELECT co.Id AS course_id, u1.Email AS coordinator_email, u2.Email AS applicant_email
+                        FROM courses co
+                        LEFT JOIN requests r ON co.Id = r.Course_Id
+                        LEFT JOIN users u1 ON r.Coordinator_Id = u1.Id
+                        LEFT JOIN users u2 ON r.Applicant_Id = u2.Id
+                        WHERE co.Category_Id = $category_id";
+        
+        $result_details = $conn->query($sql_details);
+        $details = $result_details->fetch_assoc();
+
         echo "<tr style='border-bottom: 1px solid #ddd;'>";
         echo "<td style='padding: 12px;'>" . $row["Id"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["Name"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["status"] . "</td>";
-
-
-
+        echo "<td style='padding: 12px;'>" . ($details["course_id"] ?? "N/A") . "</td>";
+        echo "<td style='padding: 12px;'>" . ($details["coordinator_email"] ?? "N/A") . "</td>";
+        echo "<td style='padding: 12px;'>" . ($details["applicant_email"] ?? "N/A") . "</td>";
         
-$moodle_url = 'https://informaticajv.net/prueba/webservice/rest/server.php';
-$token = 'aaa9b3ecc791044b0bd74c009882b074';
-$function = 'core_course_get_categories';
+        echo '<td style="padding: 12px;">';
+        echo '<select name="category_' . $row["Id"] . '" id="category_' . $row["Id"] . '" required>';
+        echo '<option value="" selected disabled>Select a parent category</option>';
+        foreach ($categories as $category) {
+            echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
+        }
+        echo '</select>';
+        echo '</td>';
 
-// Prepare the request parameters
-$params = array(
-    'wstoken' => $token,
-    'wsfunction' => $function,
-    'moodlewsrestformat' => 'json'
-);
-
-// Make the API request
-$ch = curl_init($moodle_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-$response = curl_exec($ch);
-curl_close($ch);
-
-// Decode the JSON response
-$categories = json_decode($response, true);
-
-// Generate the select element
-echo '<select name="category" id="category" required onchange="document.getElementById(\'selected_category\').value = this.value;">';
-echo '<option value ="" selected="" disabled> Select a parent category </option>';
-
-foreach ($categories as $category) {
-    echo '<option value="' . $category['id'] . '">' . $category['name'] . '</option>';
-}
-echo '</select>';
         echo "<td style='padding: 12px;'>
             <form action='create_cat.php' method='post'>
+                <input type='hidden' name='coordinator_email' value='" . ($details["coordinator_email"] ?? "") . "'>
+                <input type='hidden' name='applicant_email' value='" . ($details["applicant_email"] ?? "") . "'>
                 <input type='hidden' name='category_id' value='" . $row["Id"] . "'>
                 <input type='hidden' name='category_name' value='" . $row["Name"] . "'>
-                <input type='' name='parent_category_id' id='selected_category' value=''>
-                <button type='submit' class='createuserbutton'>Approve Category</button>
+                <input type='hidden' name='parent_category_id' id='selected_category_" . $row["Id"] . "' value=''>
+                <button type='submit' class='createuserbutton' onclick='document.getElementById(\"selected_category_" . $row["Id"] . "\").value = document.getElementById(\"category_" . $row["Id"] . "\").value;'>Approve Category</button>
             </form>
         </td>";
         echo "</tr>";
@@ -444,7 +464,6 @@ echo '</select>';
 
 $conn->close();
 ?>
-
 </div>
 
 <div class="usercheck" style="display: none;"> 
@@ -502,10 +521,10 @@ if ($result->num_rows > 0) {
         echo "<td style='padding: 12px;'>" . $row["Faculty_Name"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["Role_Name"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["School_Name"] . "</td>";       
-         echo "<td style='padding: 12px;'>" . $row["Phone"] . "</td>";
+         echo "<td style='padding: 12px;'>".$row["Phone"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["Validation"] . "</td>";
         echo "<td style='padding: 12px;'>" . $row["Created_At"] . "</td>";
-        echo "<td style= 'padding: 12px;'>" .$row["Updated_At"] . "</`td>";
+        echo "<td style= 'padding: 12px;'>".$row["Updated_At"] . "</`td>";
         
         echo "</tr>";
     }
@@ -531,9 +550,19 @@ $conn->close();
 
 </div>
 
-<div class="viewfaculty">
+<div class="viewfaculty" style="display:none;">
 
 <?php include "viewfaculty.php"; ?>
+</div>
+
+<div class="activitylogs" style="display: none;">
+
+<?php include "activitylogsadmin.php"; ?>
+
+</div>
+
+<div class="addrole">
+    <?php include "addroles.php"; ?>
 </div>
 
     </div> <!-- main div container -->
@@ -548,6 +577,9 @@ $conn->close();
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -561,6 +593,9 @@ $conn->close();
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -573,6 +608,9 @@ $conn->close();
         document.querySelector(".usercheck").style.display = "none";
         document.querySelector(".allcoursescheck").style.display = "none";
         document.querySelector(".managepermissions").style.display = "none";
+        document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -586,6 +624,9 @@ $conn->close();
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -595,10 +636,13 @@ $conn->close();
       document.querySelector(".validationscheck").style.display = "none";
       document.querySelector(".coursescheck").style.display = "none";
       document.querySelector(".assignroles").style.display = "none";
-      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "block";
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
 
     }
@@ -611,9 +655,12 @@ $conn->close();
       document.querySelector(".coursescheck").style.display = "none";
       document.querySelector(".assignroles").style.display = "none";
       document.querySelector(".categorycheck").style.display = "none";
-      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "block";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -622,9 +669,14 @@ $conn->close();
       document.querySelector(".validationscheck").style.display = "none";
       document.querySelector(".coursescheck").style.display = "none";
       document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+
       document.querySelector(".categorycheck").style.display = "none";
  document.querySelector(".allcoursescheck").style.display = "block";
  document.querySelector(".managepermissions").style.display = "none";
+ document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
 
     }
 
@@ -638,6 +690,10 @@ $conn->close();
       document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "block";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
+
     }
 
 
@@ -651,9 +707,45 @@ $conn->close();
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
       document.querySelector(".viewfaculty").style.display = "block";
+        document.querySelector(".activitylogs").style.display = "none";
+        document.querySelector(".addrole").style.display = "none";
 
     }
 
+
+function toggleActivityLogs() { 
+    
+    document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".assignroles").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="block";
+      document.querySelector(".addrole").style.display = "none";
+
+
+}
+
+function toggleAddRole() {
+    document.querySelector(".solicitationscheck").style.display = "none";
+    document.querySelector(".validationscheck").style.display = "none";
+    document.querySelector(".coursescheck").style.display = "none";
+    document.querySelector(".assignroles").style.display = "none";
+    document.querySelector(".categorycheck").style.display = "none";
+    document.querySelector(".usercheck").style.display = "none";
+    document.querySelector(".allcoursescheck").style.display = "none";
+    document.querySelector(".managepermissions").style.display = "none";
+    document.querySelector(".viewfaculty").style.display = "none";
+    document.querySelector(".activitylogs").style.display = "none";
+    document.querySelector(".addrole").style.display = "block";
+}
+
+
+    
 </script>
 </body>
 </html>

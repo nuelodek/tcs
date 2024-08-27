@@ -27,6 +27,7 @@ if (mysqli_num_rows($result) > 0) {
     echo "<tr style='background-color: #f2f2f2;'>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Name</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Username</th>";
+     echo "<th style='padding: 12px; text-align: left; border-bottom:   2px solid #ddd;'>Email</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Current Permissions</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Add Permission</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Delete Permission</th>";
@@ -38,7 +39,7 @@ if (mysqli_num_rows($result) > 0) {
         $user_id = $row['Id'];
         $user_name = $row['First_Name'] . ' ' . $row['Last_Name'];
         $username = $row['Username'];
-
+        $email =     $row['Email'];
         // Check if the coordinator has permissions
         $permission_sql = "SELECT permission FROM user_permissions WHERE user_id = $user_id";
         $permission_result = mysqli_query($conn, $permission_sql);
@@ -46,6 +47,7 @@ if (mysqli_num_rows($result) > 0) {
         echo "<tr style='border-bottom: 1px solid #ddd;'>";
         echo "<td style='padding: 12px;'>$user_name</td>";
         echo "<td style='padding: 12px;'>$username</td>";
+        echo "<td style='padding: 12px;'>$email</td>";
         
         // Current Permissions
         echo "<td style='padding: 12px;'>";
@@ -64,6 +66,7 @@ if (mysqli_num_rows($result) > 0) {
         echo "<td style='padding: 12px;'>";
         echo "<form action='add_permissions.php' method='post'>";
         echo "<input type='hidden' name='user_id' value='$user_id'>";
+        echo "<input type='hidden' name='email' value='$email'>";
         echo "<select name='new_permission'>";
         $permissions = array('solicit', 'view', 'delete');
         foreach ($permissions as $permission) {
@@ -80,6 +83,7 @@ if (mysqli_num_rows($result) > 0) {
         echo "<td style='padding: 12px;'>";
         echo "<form action='delete_permissions.php' method='post'>";
         echo "<input type='hidden' name='user_id' value='$user_id'>";
+        echo "<input type='hidden' name='email' value='$email'>";
         echo "<select name='delete_permission'>";
         foreach ($current_permissions as $permission) {
             echo "<option value='$permission'>" . ucfirst($permission) . " Courses</option>";

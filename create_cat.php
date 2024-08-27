@@ -12,7 +12,8 @@ include 'db.php';
 $category_idnumber = $_POST['category_id'] ?? '';
 $category_name = $_POST['category_name'] ??'';
 $parent_category_id = $_POST['parent_category_id'] ?? 0;
-
+$applicant_email = $_POST['applicant_email'];
+$coordinator_email = $_POST['coordinator_email'];
 // Retrieve parameters from POST
 
 $adminmail = 'seducv.seducv@gmail.com';
@@ -87,7 +88,8 @@ if (isset($response_data['exception'])) {
                 //Recipients
                 $mail->setFrom($adminmail, 'Admin Team');
                 $mail->addAddress($adminmail, 'Admin');
-
+                $mail->addAddress($coordinator_email, 'Coordinator');
+                $mail->addAddress($applicant_email, 'Applicant');
                 //Content
                 $mail->isHTML(true);
                 $mail->Subject = 'Category Status Updated';
