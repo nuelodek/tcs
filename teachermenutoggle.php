@@ -89,6 +89,11 @@
                     $row = $result->fetch_assoc();
                     echo $row['Role'];
                 ?>)</a>
+
+                
+                <a href="#" class="check-info" style="margin-right: 15px; text-decoration: none;" onclick="toggleInformationTab()">Information Tab</a>
+                                
+                
                 <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
                 <script>
         function toggleElement(elementClass) {
@@ -99,7 +104,8 @@
                 ".rejectedcoursescheck",
                 ".activitylogcheck",
                 ".updateprofilecheck",
-                ".coursescheck"
+                ".coursescheck",
+                ".informationcheck"
             ];
 
             elements.forEach(el => {
@@ -153,6 +159,11 @@
         function togglePendingCourse() {
             toggleElement(".coursescheck");
         }
+
+        function toggleInformationTab() {
+            toggleElement(".informationcheck");
+        }
+
         </script>
         <style>
         a[onclick^="toggle"].active {
@@ -164,7 +175,8 @@
         .rejectedcoursescheck,
         .activitylogcheck,
         .updateprofilecheck, 
-        .coursescheck {
+        .coursescheck,
+        .informationcheck {
             transition: all 0.3s ease-in-out;
             transform: translateX(-100%);
             opacity: 0;

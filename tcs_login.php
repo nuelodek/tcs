@@ -10,7 +10,8 @@ if (empty($_SESSION['csrf_token'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Validate CSRF token
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die('Invalid CSRF token');
+        echo '<script>alert("Invalid CSRF token. Please reload the page and try again. If the issue persists, contact support.");</script>';
+        exit();
     }
 
     // Sanitize input

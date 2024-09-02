@@ -197,6 +197,10 @@ $isValidated = ($validation === 'validated');
 </div>
 
 
+<div class="informationcheck">
+    <?php include "information.php" ?>
+</div>
+
 
 
 
@@ -257,7 +261,9 @@ $isValidated = ($validation === 'validated');
 <div class="updateprofilecheck" style="display: none;">
     <?php include "updateprofileform.php" ?>
 </div>
-
+<div class="informationcheck" style="display:none;">
+<?php include "information.php" ?>
+</div>
 
 
 
@@ -274,9 +280,16 @@ $isValidated = ($validation === 'validated');
 
    
             <button type="submit" class="btn btn-danger" onclick="window.location.href='logout.php'">Logout</button>
-<div class="updateprofilecheck">
+
+
+
+            <div class="updateprofilecheck">
     <?php include "updateprofileform.php" ?>
 </div>
+
+
+
+
 
 
     </div>

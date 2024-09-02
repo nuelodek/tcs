@@ -25,7 +25,6 @@ if (count($logs) > 0) {
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>ID</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Action</th>";
     echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>Date</th>";
-    echo "<th style='padding: 12px; text-align: left; border-bottom: 2px solid #ddd;'>User ID</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
@@ -34,7 +33,6 @@ if (count($logs) > 0) {
         echo "<td style='padding: 12px;'>" . htmlspecialchars($log["Id"]) . "</td>";
         echo "<td style='padding: 12px;'>" . htmlspecialchars($log["Action"]) . "</td>";
         echo "<td style='padding: 12px;'>" . htmlspecialchars($log["DATE"]) . "</td>";
-        echo "<td style='padding: 12px;'>" . htmlspecialchars($log["User_Id"]) . "</td>";
         echo "</tr>";
     }
     echo "</tbody>";

@@ -13,18 +13,7 @@
             <label for="identification_number">Identification Number:</label>
             <input type="text" id="identification_number" name="identification_number" value="<?php echo $identification_number; ?>" required>
             <br>
-            <label for="faculty">Faculty:</label>
-            <select id="faculty" name="faculty" required>
-                <option value="" disabled>Select Faculty</option>
-                <?php
-                // Fetch and populate faculty options
-                $faculties = json_decode(file_get_contents('getfal.php'), true);
-                foreach ($faculties as $faculty) {
-                    $selected = ($faculty['Id'] == $user_faculty) ? 'selected' : '';
-                    echo "<option value='{$faculty['Id']}' {$selected}>{$faculty['Name']}</option>";
-                }
-                ?>
-            </select>
+             
             <br>
             <label for="role">Role at University:</label>
             <select id="role" name="role" required>
