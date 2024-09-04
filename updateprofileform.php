@@ -2,10 +2,10 @@
         <h2>Update Profile</h2>
         <form action="updateprofile.php" method="post">
 
-
+            <input type="" id="user_id" name="user_id" value="<?php echo $user_id; ?>">
 
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" value="<?php echo $username; ?>" required>
+            <input type="text" id="username" name="username" value="<?php echo $username;  ?>" readonly required>
             <br>
             <label for="institutional_email">Institutional Email:</label>
             <input type="email" id="institutional_email" name="institutional_email" value="<?php echo $institutional_email; ?>" required>
@@ -13,36 +13,79 @@
             <label for="identification_number">Identification Number:</label>
             <input type="text" id="identification_number" name="identification_number" value="<?php echo $identification_number; ?>" required>
             <br>
-             
-            <br>
-            <label for="role">Role at University:</label>
-            <select id="role" name="role" required>
-                <option value="" disabled>Select Role</option>
-                <?php
-                // Fetch and populate role options
-                $roles = json_decode(file_get_contents('getrawroles.php'), true);
-                foreach ($roles as $role) {
-                    $selected = ($role['Id'] == $user_role) ? 'selected' : '';
-                    echo "<option value='{$role['Id']}' {$selected}>{$role['Role']}</option>";
-                }
-                ?>
-            </select>
-            <br>
-            <label for="school">Alternative Schools:</label>
-            <select id="school" name="school" required>
-                <option value="" disabled>Select School</option>
-                <?php
-                // Fetch and populate school options
-                $schools = json_decode(file_get_contents('getschool.php'), true);
-                foreach ($schools as $school) {
-                    $selected = ($school['Id'] == $user_school) ? 'selected' : '';
-                    echo "<option value='{$school['Id']}' {$selected}>{$school['Name']}</option>";
-                }
-                ?>
-            </select>
-            <br>
+            <label for="school">School:</label>
+            <?php
+            include 'db.php';
+            // Assuming you have a database connection established
+            $school_id = $school; // The value 1 is stored in $school
+            
+            // Prepare and execute the query to fetch the school name
+            $schoolquery = "SELECT name FROM schools WHERE id = ?";
+            $schoolstmt = $conn->prepare($schoolquery);
+            $schoolstmt->bind_param("i", $school_id);
+            $schoolstmt->execute();
+            $result = $schoolstmt->get_result();
+            
+            // Fetch the school name
+            if ($row = $result->fetch_assoc()) {
+                $school_name = $row['name'];
+            } else {
+                $school_name = "Unknown School";
+            }
+            
+            // Close the statement
+            $schoolstmt->close();
+            ?>
+            <input type="text" value="<?php echo htmlspecialchars($school_name); ?>" readonly>
 
-            <label for="firstname">First Name:</label>
+            <label for="school">Faculty:</label>
+            <?php
+            // Assuming you have a database connection established
+            $faculty_id = $faculty; // The value stored in $faculty
+            
+            // Prepare and execute the query to fetch the faculty name
+            $facultyquery = "SELECT name FROM faculties WHERE id = ?";
+            $facultystmt = $conn->prepare($facultyquery);
+            $facultystmt->bind_param("i", $faculty_id);
+            $facultystmt->execute();
+            $result = $facultystmt->get_result();
+            
+            // Fetch the faculty name
+            if ($row = $result->fetch_assoc()) {
+                $faculty_name = $row['name'];
+            } else {
+                $faculty_name = "Unknown Faculty";
+            }
+            
+            // Close the statement
+            $facultystmt->close();
+            ?>
+            <input type="text" value="<?php echo htmlspecialchars($faculty_name); ?>" readonly>
+             <label for="role">Role at University:</label>
+             <?php
+             // Assuming you have a database connection established
+             $role_id = $role; // The value stored in $role
+            
+             // Prepare and execute the query to fetch the role name
+             $rolequery = "SELECT Role FROM roles WHERE id = ?";
+             $rolestmt = $conn->prepare($rolequery);
+             $rolestmt->bind_param("i", $role_id);
+             $rolestmt->execute();
+             $result = $rolestmt->get_result();
+            
+             // Fetch the role name
+             if ($row = $result->fetch_assoc()) {
+                 $role_name = $row['Role'];
+             } else {
+                 $role_name = "Unknown Role";
+             }
+            
+             // Close the statement
+             $rolestmt->close();
+             ?>
+             <input type="text" value="<?php echo htmlspecialchars($role_name); ?>" readonly>
+           
+             <label for="firstname">First Name:</label>
             <input type="text" id="firstname" name="firstname" value="<?php echo $firstname; ?>" required>
             <br>
             <label for="lastname">Last Name:</label>

@@ -80,6 +80,8 @@ $isValidated = ($validation === 'validated');
         <h2> Hi <?php echo $firstname; ?>, what would you like to do today?</h3>
         
          <a href="#" class="checkusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUsercreate()">Create User</a>
+         <a href="#" class="updateusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUserupdate()">Update User</a>
+
          <a href="#" class="add-role" style="margin-right: 15px; text-decoration: none;" onclick="toggleAddRole()">Add Role</a>
       
          <a href="#" class="create-course" style="margin-right: 15px; text-decoration: none;" onclick="toggleCreateCourse()">Create Course</a>
@@ -561,14 +563,34 @@ $conn->close();
 
 </div>
 
-<div class="addrole">
+<div class="addrole" style="display:none;">
     <?php include "addroles.php"; ?>
+</div>
+
+<div class="updateusers">
+<?php include 'updateusers.php'; ?>
 </div>
 
     </div> <!-- main div container -->
 
     
     <script>
+
+function toggleUserupdate() {
+      document.querySelector(".solicitationscheck").style.display = "none";
+      document.querySelector(".validationscheck").style.display = "none";
+      document.querySelector(".coursescheck").style.display = "none";
+      document.querySelector(".categorycheck").style.display = "none";
+      document.querySelector(".usercheck").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "none";
+      document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".activitylogs").style.display ="none";
+      document.querySelector(".addrole").style.display = "none";
+      document.querySelector(".updateusers").style.display ="block";
+    }
+
+
     function toggleSolicitations() {
       document.querySelector(".solicitationscheck").style.display = "block";
       document.querySelector(".validationscheck").style.display = "none";
