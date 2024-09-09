@@ -80,7 +80,7 @@ $isValidated = ($validation === 'validated');
         <h2> Hi <?php echo $firstname; ?>, what would you like to do today?</h3>
         
          <a href="#" class="checkusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUsercreate()">Create User</a>
-         <a href="#" class="updateusers" style="margin-right: 15px; text-decoration: none;" onclick="toggleUserupdate()">Update User</a>
+         <a href="#" class="updateusecheck" style="margin-right: 15px; text-decoration: none;" onclick="toggleUserupdate()">Update User</a>
 
          <a href="#" class="add-role" style="margin-right: 15px; text-decoration: none;" onclick="toggleAddRole()">Add Role</a>
       
@@ -91,7 +91,7 @@ $isValidated = ($validation === 'validated');
          <a href="#" class="all-courses" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewCourses()">View Courses </a>        
          <a href="#" class="manage-permissions" style="margin-right: 15px; text-decoration: none;" onclick="toggleManagePermissions()">Manage Permissions</a> 
          
-                  <a href="#" class="view-faculty" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewFaculty()">View Faculty</a>
+                  <a href="#" class="view-faculty" style="margin-right: 15px; text-decoration: none;" onclick="toggleViewFaculty()">View School</a>
                   <a href="#" class="activity-logs" style="margin-right: 15px; text-decoration: none;" onclick="toggleActivityLogs()">Activity Logs</a>
 
          <a href="logout.php" class="logout-button" style="text-decoration: none;">Logout</a>
@@ -177,30 +177,7 @@ a:hover {
 </table>
 </div>
          <div class="solicitationscheck" style="display:none;"> 
-         <h2>Dummy Table</h2>
-         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-             <thead>
-                 <tr style="background-color: #f2f2f2;">
-                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Column 1</th>
-                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Column 2</th>
-                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Column 3</th>
-                 </tr>
-             </thead>
-             <tbody>
-                 <tr style="border-bottom: 1px solid #ddd;">
-                     <td style="padding: 12px;">Data 1</td>
-                     <td style="padding: 12px;">Data 2</td>
-                     <td style="padding: 12px;">Data 3</td>
-                 </tr>
-                 <tr style="border-bottom: 1px solid #ddd;">
-                     <td style="padding: 12px;">Data 4</td>
-                     <td style="padding: 12px;">Data 5</td>
-                     <td style="padding: 12px;">Data 6</td>
-                 </tr>
-             </tbody>
-         </table>
-
-
+         
     </div>
 
       <div class="coursescheck" style="display:none;"> 
@@ -567,7 +544,7 @@ $conn->close();
     <?php include "addroles.php"; ?>
 </div>
 
-<div class="updateusers">
+<div class="updateusers" style="display:none;">
 <?php include 'updateusers.php'; ?>
 </div>
 
@@ -575,8 +552,7 @@ $conn->close();
 
     
     <script>
-
-function toggleUserupdate() {
+  function toggleUserupdate() {
       document.querySelector(".solicitationscheck").style.display = "none";
       document.querySelector(".validationscheck").style.display = "none";
       document.querySelector(".coursescheck").style.display = "none";
@@ -602,7 +578,7 @@ function toggleUserupdate() {
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
     function toggleUsercreate() {
@@ -612,13 +588,12 @@ function toggleUserupdate() {
       document.querySelector(".assignroles").style.display = "none";
       document.querySelector(".categorycheck").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
-      document.querySelector(".usercheck").style.display = "none";
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
     function toggleCreateCourse () {
@@ -631,9 +606,9 @@ function toggleUserupdate() {
         document.querySelector(".allcoursescheck").style.display = "none";
         document.querySelector(".managepermissions").style.display = "none";
         document.querySelector(".viewfaculty").style.display = "none";
-      document.querySelector(".activitylogs").style.display ="none";
-      document.querySelector(".addrole").style.display = "none";
-
+        document.querySelector(".activitylogs").style.display ="none";
+        document.querySelector(".addrole").style.display = "none";
+        document.querySelector(".updateusers").style.display ="none";
     }
 
 
@@ -649,7 +624,7 @@ function toggleUserupdate() {
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
 
@@ -665,8 +640,7 @@ function toggleUserupdate() {
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
 
@@ -683,7 +657,7 @@ function toggleUserupdate() {
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
     function toggleViewCourses() {
@@ -692,14 +666,13 @@ function toggleUserupdate() {
       document.querySelector(".coursescheck").style.display = "none";
       document.querySelector(".assignroles").style.display = "none";
       document.querySelector(".usercheck").style.display = "none";
-
       document.querySelector(".categorycheck").style.display = "none";
- document.querySelector(".allcoursescheck").style.display = "block";
- document.querySelector(".managepermissions").style.display = "none";
- document.querySelector(".viewfaculty").style.display = "none";
+      document.querySelector(".allcoursescheck").style.display = "block";
+      document.querySelector(".managepermissions").style.display = "none";
+      document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
 
@@ -715,7 +688,7 @@ function toggleUserupdate() {
       document.querySelector(".viewfaculty").style.display = "none";
       document.querySelector(".activitylogs").style.display ="none";
       document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".updateusers").style.display ="none";
     }
 
 
@@ -729,27 +702,25 @@ function toggleUserupdate() {
       document.querySelector(".allcoursescheck").style.display = "none";
       document.querySelector(".managepermissions").style.display = "none";
       document.querySelector(".viewfaculty").style.display = "block";
-        document.querySelector(".activitylogs").style.display = "none";
-        document.querySelector(".addrole").style.display = "none";
-
+      document.querySelector(".activitylogs").style.display = "none";
+      document.querySelector(".addrole").style.display = "none";
+      document.querySelector(".updateusers").style.display ="none";
     }
 
 
 function toggleActivityLogs() { 
-    
     document.querySelector(".solicitationscheck").style.display = "none";
-      document.querySelector(".validationscheck").style.display = "none";
-      document.querySelector(".coursescheck").style.display = "none";
-      document.querySelector(".assignroles").style.display = "none";
-      document.querySelector(".categorycheck").style.display = "none";
-      document.querySelector(".usercheck").style.display = "none";
-      document.querySelector(".allcoursescheck").style.display = "none";
-      document.querySelector(".managepermissions").style.display = "none";
-      document.querySelector(".viewfaculty").style.display = "none";
-      document.querySelector(".activitylogs").style.display ="block";
-      document.querySelector(".addrole").style.display = "none";
-
-
+    document.querySelector(".validationscheck").style.display = "none";
+    document.querySelector(".coursescheck").style.display = "none";
+    document.querySelector(".assignroles").style.display = "none";
+    document.querySelector(".categorycheck").style.display = "none";
+    document.querySelector(".usercheck").style.display = "none";
+    document.querySelector(".allcoursescheck").style.display = "none";
+    document.querySelector(".managepermissions").style.display = "none";
+    document.querySelector(".viewfaculty").style.display = "none";
+    document.querySelector(".activitylogs").style.display ="block";
+    document.querySelector(".addrole").style.display = "none";
+    document.querySelector(".updateusers").style.display ="none";
 }
 
 function toggleAddRole() {
@@ -764,6 +735,7 @@ function toggleAddRole() {
     document.querySelector(".viewfaculty").style.display = "none";
     document.querySelector(".activitylogs").style.display = "none";
     document.querySelector(".addrole").style.display = "block";
+    document.querySelector(".updateusers").style.display ="none";
 }
 
 

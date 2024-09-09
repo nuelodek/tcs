@@ -19,7 +19,7 @@ $result = mysqli_query($conn, $sql);
 
 // Check if there are coordinators
 if (mysqli_num_rows($result) > 0) {
-    echo "<h2>Manage Coordinator Permissions</h2>";
+    echo "<h2>Manage Permissions</h2>";
     
     // Permissions table
     echo "<table style='width: 100%; border-collapse: collapse; margin-bottom: 20px;'>";

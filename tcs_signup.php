@@ -13,7 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $moodle_token = 'aaa9b3ecc791044b0bd74c009882b074';
 
     // Fetch form data
-    $username = $_POST['username'];
+    $username = strtolower($_POST['username']);
+
+
     $password = $_POST['password'];
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
@@ -341,7 +343,7 @@ $conn->close();
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
             <label for="username">Username</label>
-            <input type="text" name="username" id="username" placeholder="Username" required>
+            <input type="text" name="username" id="username" placeholder="Username" required pattern="[a-z]+" title="Username must contain only lowercase letters">
 
                     <label for="password">Password (Must contain special character, uppercase, lowercase, number, and be 8+ characters)</label>
                     <div class="password-container">

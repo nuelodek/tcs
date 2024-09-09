@@ -50,8 +50,8 @@ echo "<h2>All Courses</h2>";
 
 // Filter form
 echo "<form method='get'>";
-echo "<label for='category'>Filter by Category:</label>";
-echo "<select name='category' id='category'>";
+echo "<label for='category' style='margin-right: 10px;'>Filter by Category:</label>";
+echo "<select name='category' id='category' style='margin-right: 10px;'>";
 echo "<option value=''>All Categories</option>";
 while ($category = $categories_result->fetch_assoc()) {
     $selected = ($category['Id'] == $category_filter) ? 'selected' : '';
@@ -59,8 +59,8 @@ while ($category = $categories_result->fetch_assoc()) {
 }
 echo "</select>";
 
-echo "<label for='status'>Filter by Status:</label>";
-echo "<select name='status' id='status'>";
+echo "<label for='status' style='margin-right: 10px;'>Filter by Status:</label>";
+echo "<select name='status' id='status' style='margin-right: 10px;'>";
 echo "<option value=''>All Statuses</option>";
 echo "<option value='1' " . ($status_filter == '1' ? 'selected' : '') . ">Request Submitted</option>";
 echo "<option value='2' " . ($status_filter == '2' ? 'selected' : '') . ">Request Approved</option>";
@@ -68,8 +68,8 @@ echo "<option value='3' " . ($status_filter == '3' ? 'selected' : '') . ">Reques
 echo "<option value='4' " . ($status_filter == '4' ? 'selected' : '') . ">Request Created</option>";
 echo "</select>";
 
-echo "<label for='search'>Search:</label>";
-echo "<input type='text' name='search' id='search' value='" . htmlspecialchars($search_query) . "'>";
+echo "<label for='search' style='margin-right: 10px;'>Search:</label>";
+echo "<input type='text' name='search' id='search' value='" . htmlspecialchars($search_query) . "' style='margin-right: 10px;'>";
 
 echo "<input type='submit' value='Filter'>";
 echo "</form>";

@@ -25,6 +25,7 @@ $role_id = $_POST['role_id'];
 $school_id = $_POST['school_id'];
 $phone = $_POST['phone'];
 
+
 $adminmail ='seducv.seducv@gmail.com';
 $mailpassword = 'kvps rjys jafc eodp';
 
@@ -72,8 +73,8 @@ $user = [
     'auth' => 'manual',
     'idnumber' => $identification_number,
     'phone1' => $phone,
-    'city' => 'YourCity', // Comment out if optional
-    'country' => 'YourCountry' // Comment out if optional
+    'city' => 'Lagos', // Comment out if optional
+    'country' => 'NG' // Comment out if optional
 ];
 
 
@@ -83,11 +84,6 @@ $params = [
     'moodlewsrestformat' => 'json',
     'users' => [$user]
 ];
-
-// Debugging: Output parameters
-echo "<pre>";
-print_r($params);
-echo "</pre>";
 
 // Make the API request
 $ch = curl_init();

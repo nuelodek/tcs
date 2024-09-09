@@ -3,6 +3,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve and sanitize form data
 
     $user_id = filter_var($_POST['user_id'], FILTER_SANITIZE_NUMBER_INT);
+    $moodle_id = filter_var($_POST['moodle_id'], FILTER_SANITIZE_NUMBER_INT);
     $username = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
     $institutional_email = filter_var($_POST['institutional_email'], FILTER_SANITIZE_EMAIL);
     $identification_number = htmlspecialchars(trim($_POST['identification_number']), ENT_QUOTES, 'UTF-8');
@@ -36,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $create_table_sql = "CREATE TABLE tempupdate (
             id INT(11) AUTO_INCREMENT PRIMARY KEY,
             user_id INT(11),
+            moodle_id INT(11),
             username VARCHAR(255),
             institutional_email VARCHAR(255),
             identification_number VARCHAR(255),
@@ -55,8 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Get the user_id (assuming it's stored in the session)
     // Prepare and execute the SQL statement with user_id
-    $stmt = $conn->prepare("INSERT INTO tempupdate (user_id, username, institutional_email, identification_number, firstname, lastname, email, phone, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("issssssss", $user_id, $username, $institutional_email, $identification_number, $firstname, $lastname, $email, $phone, $password);
+    $stmt = $conn->prepare("INSERT INTO tempupdate (user_id, moodle_id, username, institutional_email, identification_number, firstname, lastname, email, phone, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissssssss", $user_id, $moodle_id, $username, $institutional_email, $identification_number, $firstname, $lastname, $email, $phone, $password);
 
     if ($stmt->execute()) {
         
@@ -81,4 +83,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
 }
-?>

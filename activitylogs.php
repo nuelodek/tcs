@@ -43,4 +43,4 @@ if (count($logs) > 0) {
 
 $stmt->close();
 $conn->close();
-?>
+
