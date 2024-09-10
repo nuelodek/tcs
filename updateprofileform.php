@@ -1,14 +1,9 @@
-        
-        <h2>Update Profile</h2>
+   
+   <h2>Update Profile</h2>
         <form action="updateprofile.php" method="post">
 
-            <label for="user_id">User ID:</label>
-
-            <input type="" id="user_id" name="user_id" value="<?php echo $user_id; ?>">
-        
-                    <label for="moodle_id">Moodle ID:</label>
-                    <input type="text" id="moodle_id" name="moodle_id" value="<?php echo $moodle_id; ?>" required readonly>
-                    <br>
+            <input type="hidden" id="user_id" name="user_id" value="<?php echo $user_id; ?>" readonly>
+            <input type="hidden" id="moodle_id" name="moodle_id" value="<?php echo $moodle_id; ?>" required readonly>
         
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" value="<?php echo $username;  ?>" readonly required>

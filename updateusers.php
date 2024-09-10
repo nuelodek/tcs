@@ -13,7 +13,7 @@ if (!$conn) {
 }
 
 // Fetch data from temp_update table
-$query = "SELECT * FROM tempupdate";
+$query = "SELECT * FROM tempupdate WHERE (user_id, timestamp) IN (SELECT user_id, MAX(timestamp) FROM tempupdate GROUP BY user_id)";
 $result = mysqli_query($conn, $query);
 
 // Display the table

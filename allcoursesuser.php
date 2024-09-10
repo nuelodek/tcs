@@ -149,4 +149,3 @@ if (count($courses) > 0) {
 } else {
             echo "<p>No courses found.</p>";
 }
-?>
