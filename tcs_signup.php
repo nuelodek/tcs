@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'db.php'; // Include your database connection script
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -9,8 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Moodle API credentials
-    $moodle_url = 'https://informaticajv.net/prueba/webservice/rest/server.php';
-    $moodle_token = 'aaa9b3ecc791044b0bd74c009882b074';
+    // $moodle_url = 'https://informaticajv.net/prueba/webservice/rest/server.php';
+    // $moodle_token = 'aaa9b3ecc791044b0bd74c009882b074';
+
+
+    $moodle_url = 'https://growsocial.com.ng/moodlephp/webservice/rest/server.php';
+    $moodle_token = '5912540712ff357b1411bbd7a5496abd';
+
+    // Token 5912540712ff357b1411bbd7a5496abd	
+    // moodleapi
+    
+    
+
+
 
     // Fetch form data
     $username = strtolower($_POST['username']);
@@ -74,6 +91,35 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Teacher Signup</title>
+
+    
+        <script>
+        $(document).ready(function() {
+            $('#signupForm').submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: 'tcs_signup_process.php',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.status === 'success') {
+                            alert(response.message);
+                            setTimeout(function() {
+                                window.location.href = 'tcs_login.php';
+                            }, 5000);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+        </script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;

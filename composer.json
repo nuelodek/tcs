@@ -1,0 +1,12 @@
+{
+    "name": "shortchase/tcs",
+    "description": "none",
+    "autoload": {
+        "psr-4": {
+            "Shortchase\\Tcs\\": "src/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}
